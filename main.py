@@ -33,4 +33,66 @@ class Deck:
     def deal(self):
         singleCard = self.deck.pop()
         return singleCard
+
+class Hand:
+    def __init__(self):
+        self.cards = []
+        self.value = 0 
+        self.aces = 0 # keep track of aces (they can be 1 or 11)
     
+    def addCard(self, card):
+        self.cards.append(card)
+        self.value += values[card.rank]
+        
+        if card.rank == 'Ace':
+            self.aces += 1
+    
+    def adjustForAce(self):
+        while self.value > 21 and self.aces > 0:
+            self.value -= 10
+            self.aces -= 1
+    
+class Chips:
+    def __init__(self, total = 100):
+        self.total = total
+        self.bet = 0
+    
+    def winBet(self):
+        self.total += self.bet
+    
+    def loseBet(self):
+        self.total -= self.bet
+    
+def takeBet(chips):
+    while True:
+        try:
+            chips.bet = int(input("How many chips would you like to bet? "))
+        except:
+            print("Please provide an integer")
+        else:
+            if chips.bet > chips.total:
+                print(f"Sorry, you do not have enough chips. You have {chips.total}.")    
+            else:
+                break
+
+def hit(deck, hand):
+    singleCard = deck.deal()
+    hand.addCard(singleCard)
+    hand.adjustForAce()
+    
+def hitOrStand(deck, hand):
+    global playing
+    while True:
+        x = input("Hit or Stand? Enter h or s")
+        if x[0].lower() == "h":
+            hit(deck, hand)
+        elif x[0].lower() == "s":
+            print("Player Stands. Dealer's Turn")
+testDeck = Deck()
+testDeck.shuffle()
+
+testPlayer = Hand()
+testPlayer.addCard(testDeck.deal())
+testPlayer.addCard(testDeck.deal())
+print(testPlayer.value)
+
