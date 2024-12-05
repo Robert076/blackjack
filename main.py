@@ -88,11 +88,93 @@ def hitOrStand(deck, hand):
             hit(deck, hand)
         elif x[0].lower() == "s":
             print("Player Stands. Dealer's Turn")
-testDeck = Deck()
-testDeck.shuffle()
+            playing = False
+        else:
+            print("Sorry, I did not understand that. Please enter h or s only.")
+            continue
+        break
+    
+def showSome(player, dealer):
+    print("\nDealer's Hand: ")
+    print("First card hidden!")
+    print(dealer.cards[1])
+    
+    print("\nPlayer's Hand: ")
+    for card in player.cards:
+        print(card)
 
-testPlayer = Hand()
-testPlayer.addCard(testDeck.deal())
-testPlayer.addCard(testDeck.deal())
-print(testPlayer.value)
+def showAll(player, dealer):
+    print("\nDealer's Hand: ", *dealer.cards, sep="\n")
+    print(f"Dealer sum: {dealer.value}")
+    
+    print("\nPlayer's Hand: ", *player.cards, sep="\n")
+    print(f"Player sum: {player.value}")
+        
+def playerBusts(player, dealer, chips):
+    print("BUST PLAYER!")
+    chips.loseBet()
 
+def playerWins(player, dealer, chips):
+    print("PLAYER WINS!")
+    chips.winBet()
+
+def dealerBusts(player, dealer, chips):
+    print("BUST DEALER!")
+    chips.loseBet()
+
+def dealerWins(player, dealer, chips):
+    print("DEALER WINS!")
+    chips.winBet()
+
+def push(player, dealer):
+    print("Dealer and player tie! PUSH")
+
+
+
+while True:
+    print("WELCOME TO BLACKJACK")
+    
+    deck = Deck()
+    deck.shuffle()
+    
+    playerHand = Hand()
+    playerHand.addCard(deck.deal())
+    playerHand.addCard(deck.deal())
+    
+    dealerHand = Hand()
+    dealerHand.addCard(deck.deal())
+    dealerHand.addCard(deck.deal())
+    
+    playerChips = Chips()
+    takeBet(playerChips)
+    showSome(playerHand, dealerHand)
+    
+    while playing:
+        hitOrStand(deck, playerHand)
+        showSome(playerHand, dealerHand)
+        
+        if playerHand.value > 21:
+            playerBusts(playerHand, dealerHand, playerChips)
+            break
+        if playerHand.value <= 21:
+            while dealerHand.value < 17:
+                hit(deck, dealerHand)
+            
+            showAll(playerHand, dealerHand)
+            if dealerHand.value > 21:
+                dealerBusts(playerHand, dealerHand, playerChips)
+            elif dealerHand.value > playerHand.value:
+                dealerWins(playerHand, dealerHand, playerChips)
+            elif dealerHand.value < playerHand.value:
+                playerWins(playerHand, dealerHand, playerChips)
+            else:
+                push(playerHand, dealerHand)
+        
+    print(f"Total chips: {playerChips.total}")
+    newGame = input("Play again? y/n")
+    if newGame[0].lower() == 'y':
+        playing = True
+        continue
+    else:
+        print("Goodbye")
+        break
